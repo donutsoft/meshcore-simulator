@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MeshCore Simulator</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="eyebrow">ROUTING LAB</p>
+        <h1>MeshCore Simulator</h1>
+      </div>
+      <div class="capture-status"><span id="status-dot"></span><span id="status">disconnected</span></div>
+    </header>
+
+    <main>
+      <aside>
+        <section>
+          <h2>Companion</h2>
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="tcp">TCP</button>
+            <button class="tab" data-tab="usb">USB</button>
+            <button class="tab" data-tab="ble">Bluetooth</button>
+          </div>
+          <form id="tcp-form" class="transport active">
+            <label>Host<input id="tcp-host" placeholder="meshcore.local" required></label>
+            <label>Port<input id="tcp-port" type="number" value="5000" min="1" max="65535" required></label>
+            <button type="submit">Connect TCP</button>
+          </form>
+          <form id="usb-form" class="transport">
+            <label>Serial port<select id="usb-port"></select></label>
+            <label>Baud rate<input id="usb-baud" type="number" value="115200"></label>
+            <button type="button" id="refresh-usb" class="secondary">Refresh ports</button>
+            <button type="submit">Connect USB</button>
+          </form>
+          <div id="ble-form" class="transport">
+            <label>BLE companion<select id="ble-device"></select></label>
+            <button type="button" id="scan-ble" class="secondary">Scan</button>
+            <button type="button" id="connect-ble">Connect Bluetooth</button>
+          </div>
+          <button id="disconnect" class="danger">Disconnect</button>
+          <p id="connection-message" class="message"></p>
+        </section>
+
+        <section>
+          <h2>Simulated companions</h2>
+          <p class="section-note">Choose a slot, then click a repeater on the map.</p>
+          <div class="companion-slots">
+            <button type="button" id="companion-slot-0" class="companion-slot active" data-slot="0">
+              <span><i class="slot-dot slot-a"></i>TCP 5000</span>
+              <strong id="companion-repeater-0">Choose repeater</strong>
+            </button>
+            <button type="button" id="companion-slot-1" class="companion-slot" data-slot="1">
+              <span><i class="slot-dot slot-b"></i>TCP 5001</span>
+              <strong id="companion-repeater-1">Choose repeater</strong>
+            </button>
+          </div>
+          <label class="simulation-setting">
+            Random packet drop rate (%)
+            <input id="packet-drop-rate" type="number" value="0" min="0" max="100" step="0.1" required>
+          </label>
+          <div class="simulation-actions">
+            <button type="button" id="start-simulation">Start simulation</button>
+            <button type="button" id="stop-simulation" class="secondary">Stop</button>
+          </div>
+          <p id="simulation-message" class="message"></p>
+          <div class="packet-bytes-summary">
+            <h3>Bytes sent per packet</h3>
+            <dl id="packet-bytes">
+              <div class="packet-bytes-empty">No packets sent yet.</div>
+            </dl>
+          </div>
+        </section>
+
+        <section>
+          <h2>Capture</h2>
+          <dl class="stats">
+            <div><dt>Repeaters</dt><dd id="repeaters">0</dd></div>
+            <div><dt>Links</dt><dd id="links">0</dd></div>
+            <div><dt>3-byte packets</dt><dd id="packets">0</dd></div>
+            <div><dt>Repeater adverts</dt><dd id="adverts">0</dd></div>
+            <div><dt>Ignored packets</dt><dd id="ignored">0</dd></div>
+          </dl>
+        </section>
+
+        <section class="legend">
+          <h2>Positions</h2>
+          <p><i class="swatch advert"></i> GPS from advert</p>
+          <p><i class="swatch inferred"></i> Geographic midpoint estimate</p>
+          <p class="legend-note">Coincident estimates are spread locally so their links remain visible.</p>
+          <p><i class="swatch edge"></i> Observed route adjacency</p>
+          <p><i class="swatch route"></i> Repeater transmission currently on air</p>
+          <p class="legend-note">Route color is derived from the packet data hash.</p>
+        </section>
+      </aside>
+
+      <section class="map-shell">
+        <div id="map"></div>
+        <div id="map-empty">
+          <h2>Map waiting for data</h2>
+          <p id="map-message">Connect a companion to begin capturing.</p>
+        </div>
+        <div id="node-list"></div>
+      </section>
+    </main>
+
+    <script>
+      window.MESHCORE_MAP_CONFIG = {{ map_config | tojson }};
+    </script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

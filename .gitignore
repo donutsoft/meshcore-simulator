@@ -1,0 +1,32 @@
+# Python bytecode and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local package/build output
+.venv/
+.uv-cache/
+dist/
+build/
+*.egg-info/
+
+# Runtime state (databases, WAL files, and simulated companion identities)
+data/
+
+# Native MeshCore simulator output
+MeshCore/simulator/build/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
